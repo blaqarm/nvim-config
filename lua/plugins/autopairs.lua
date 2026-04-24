@@ -1,0 +1,17 @@
+-- nvim-autopairs — автоматические скобки/кавычки
+return {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    opts = {
+        check_ts = true, -- использовать treesitter
+        ts_config = {
+            lua        = { "string" },
+            javascript = { "template_string" },
+        },
+        disable_filetype = { "TelescopePrompt", "vim" },
+        fast_wrap = {
+            map = "<M-e>",
+            chars = { "{", "[", "(", '"', "'" },
+        },
+    },
+}
