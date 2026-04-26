@@ -2,96 +2,96 @@
 
 # Neovim 0.12 config (Arch Linux)
 
-Обновлённый конфиг с заделом на переход с Doom Emacs.
+Updated config with groundwork for migrating away from Doom Emacs.
 
 ---
 
-## Установка
+## Installation
 
 ```bash
-# Бэкап старого
+# Backup the old config
 mv ~/.config/nvim        ~/.config/nvim.bak
 mv ~/.local/share/nvim   ~/.local/share/nvim.bak
 mv ~/.local/state/nvim   ~/.local/state/nvim.bak
 mv ~/.cache/nvim         ~/.cache/nvim.bak
 
-# Кладём новый
+# Drop in the new one
 unzip nvim.zip -d ~/.config/
-# Должна появиться папка ~/.config/nvim/
+# The folder ~/.config/nvim/ should appear
 
-# Запуск — lazy.nvim сам поставит всё
+# Launch — lazy.nvim will install everything itself
 nvim
 ```
 
-При первом запуске:
+On the first launch:
 
-1. Lazy установит плагины.
-2. Mason докачает LSP/форматтеры.
-3. Treesitter скомпилирует парсеры.
-4. `:checkhealth` .
+1. Lazy installs the plugins.
+2. Mason downloads LSPs/formatters.
+3. Treesitter compiles parsers.
+4. `:checkhealth`.
 
 ---
 
-## Зависимости системы (pacman)
+## System dependencies (pacman)
 
 ```bash
-# Обязательно
+# Required
 sudo pacman -S neovim git curl unzip ripgrep fd make gcc nodejs npm
 
-# Для Ollama (локальные модели)
+# For Ollama (local models)
 sudo pacman -S ollama
-# Под AMD (ROCm):
+# For AMD (ROCm):
 sudo pacman -S ollama-rocm
 systemctl --user enable --now ollama
-# либо, если инстанс один на машину:
+# Or, if there is one instance per machine:
 # sudo systemctl enable --now ollama
 
-# Модели под  24 GB VRAM:
+# Models for 24 GB VRAM rx 7900 xtx:
 ollama pull qwen2.5-coder:7b
 ollama pull qwen2.5-coder:32b
 ollama pull deepseek-coder-v2:16b
 ollama pull llama3.1:8b
-ollama pull qwen3:14b  # сейчас на этом сижу.
+ollama pull qwen3:14b  # currently using this one.
 ```
 
-Модель по умолчанию в `plugins/codecompanion.lua` => `schema.model.default`
+The default model is set in `plugins/codecompanion.lua` => `schema.model.default`
 
 ### Nerd Font
 
-Для иконок в lualine/bufferline/neo-tree нужен nerd-font:
+A nerd-font is required for icons in lualine/bufferline/neo-tree:
 
 ```bash
-sudo pacman -S ttf-hack-nerd-mono  # вроде так
+sudo pacman -S ttf-hack-nerd-mono  # something like this
 ```
 
 ---
 
-## Структура
+## Structure
 
 ```
 nvim/
-├── init.lua                 точка входа
-├── lazy-lock.json           (создастся автоматически)
+├── init.lua                 entry point
+├── lazy-lock.json           (created automatically)
 └── lua/
     ├── core/
-    │   ├── configs.lua      опции редактора, diagnostic
-    │   ├── mappings.lua     глобальные кеймапы
+    │   ├── configs.lua      editor options, diagnostic
+    │   ├── mappings.lua     global keymaps
     │   └── lazy.lua         bootstrap lazy.nvim
     └── plugins/
         ├── autopairs.lua
-        ├── blink-cmp.lua    autocomplete (новый, быстрый)
+        ├── blink-cmp.lua    autocomplete (new, fast)
         ├── bufferline.lua
-        ├── codecompanion.lua  AI через локальную Ollama
-        ├── comment.lua      <leader>- тогл
-        ├── conform.lua      форматтеры (prettier/black/stylua)
+        ├── codecompanion.lua  AI via local Ollama
+        ├── comment.lua      <leader>- toggle
+        ├── conform.lua      formatters (prettier/black/stylua)
         ├── dashboard.lua
         ├── gitsigns.lua
         ├── leap.lua
         ├── lsp.lua          vim.lsp.config / vim.lsp.enable (0.11+ API)
         ├── lualine.lua
-        ├── mason.lua        установщик LSP/форматтеров
+        ├── mason.lua        LSP/formatter installer
         ├── neo-tree.lua
-        ├── neoscroll.lua    плавный скролл (240 Hz-дружелюбные тайминги)
+        ├── neoscroll.lua    smooth scroll (240 Hz-friendly timings)
         ├── onedark.lua
         ├── telescope.lua
         ├── toggleterm.lua
@@ -101,23 +101,23 @@ nvim/
 
 ---
 
-## Хоткеи (Leader = Space)
+## Hotkeys (Leader = Space)
 
-### Файлы / буферы
+### Files / buffers
 
-| Keys                | Действие                     |
-| ------------------- | ---------------------------- |
-| `<leader>w`         | Сохранить                    |
-| `<leader>q`         | Закрыть окно                 |
-| `<leader>Q`         | Выйти с `!`                  |
-| `<leader>t`         | NeoTree toggle               |
-| `<Tab>` / `<S-Tab>` | Следующий / предыдущий буфер |
-| `<leader>x`         | Pick-close буфер             |
-| `<C-x>`             | Закрыть все остальные буферы |
+| Keys                | Action                  |
+| ------------------- | ----------------------- |
+| `<leader>w`         | Save                    |
+| `<leader>q`         | Close window            |
+| `<leader>Q`         | Quit with `!`           |
+| `<leader>t`         | NeoTree toggle          |
+| `<Tab>` / `<S-Tab>` | Next / previous buffer  |
+| `<leader>x`         | Pick-close buffer       |
+| `<C-x>`             | Close all other buffers |
 
-### Telescope (поиск)
+### Telescope (search)
 
-| Keys         | Действие         |
+| Keys         | Action           |
 | ------------ | ---------------- |
 | `<leader>ff` | Find files       |
 | `<leader>fw` | Live grep        |
@@ -129,105 +129,105 @@ nvim/
 
 ### LSP
 
-| Keys         | Действие                        |
-| ------------ | ------------------------------- |
-| `gd` / `gD`  | Definition / Declaration        |
-| `gi`         | Implementation                  |
-| `gr`         | References                      |
-| `K`          | Hover                           |
-| `<C-k>`      | Signature help                  |
-| `<leader>D`  | Type definition                 |
-| `<leader>lr` | Rename                          |
-| `<leader>la` | Code action                     |
-| `<leader>lf` | Format (LSP)                    |
-| `<leader>lF` | Format (conform, принудительно) |
-| `<leader>le` | Показать диагностику строки     |
-| `]d` / `[d`  | След / пред диагностика         |
+| Keys         | Action                     |
+| ------------ | -------------------------- |
+| `gd` / `gD`  | Definition / Declaration   |
+| `gi`         | Implementation             |
+| `gr`         | References                 |
+| `K`          | Hover                      |
+| `<C-k>`      | Signature help             |
+| `<leader>D`  | Type definition            |
+| `<leader>lr` | Rename                     |
+| `<leader>la` | Code action                |
+| `<leader>lf` | Format (LSP)               |
+| `<leader>lF` | Format (conform, forced)   |
+| `<leader>le` | Show line diagnostics      |
+| `]d` / `[d`  | Next / previous diagnostic |
 
-### Комментирование
+### Commenting
 
-| Keys         | Действие                    |
-| ------------ | --------------------------- |
-| `<leader>-`  | Тогл строки / выделения     |
-| `gcc`        | Тогл строки                 |
-| `gc{motion}` | По моушену (`gcap` — абзац) |
-| `gbc` / `gb` | Блочный комментарий         |
+| Keys         | Action                         |
+| ------------ | ------------------------------ |
+| `<leader>-`  | Toggle line / selection        |
+| `gcc`        | Toggle line                    |
+| `gc{motion}` | By motion (`gcap` — paragraph) |
+| `gbc` / `gb` | Block comment                  |
 
 ### AI (CodeCompanion / Ollama)
 
-| Keys          | Действие                                         |
-| ------------- | ------------------------------------------------ |
-| `<leader>aa`  | Меню действий (объяснить, отрефакторить, тесты…) |
-| `<leader>ac`  | Chat toggle (аналог gptel-menu)                  |
-| `<leader>ai`  | Inline prompt по выделению                       |
-| `<leader>ap`  | Prompt Library                                   |
-| `ga` (visual) | Добавить выделение в активный чат                |
+| Keys          | Action                                   |
+| ------------- | ---------------------------------------- |
+| `<leader>aa`  | Actions menu (explain, refactor, tests…) |
+| `<leader>ac`  | Chat toggle (analogous to gptel-menu)    |
+| `<leader>ai`  | Inline prompt on selection               |
+| `<leader>ap`  | Prompt Library                           |
+| `ga` (visual) | Add selection to active chat             |
 
 ### Git (gitsigns)
 
-| Keys         | Действие         |
-| ------------ | ---------------- |
-| `]c` / `[c`  | След / пред hunk |
-| `<leader>gs` | Stage hunk       |
-| `<leader>gr` | Reset hunk       |
-| `<leader>gS` | Stage buffer     |
-| `<leader>gR` | Reset buffer     |
-| `<leader>gp` | Preview hunk     |
-| `<leader>gb` | Blame line       |
-| `<leader>gd` | Diff this        |
+| Keys         | Action               |
+| ------------ | -------------------- |
+| `]c` / `[c`  | Next / previous hunk |
+| `<leader>gs` | Stage hunk           |
+| `<leader>gr` | Reset hunk           |
+| `<leader>gS` | Stage buffer         |
+| `<leader>gR` | Reset buffer         |
+| `<leader>gp` | Preview hunk         |
+| `<leader>gb` | Blame line           |
+| `<leader>gd` | Diff this            |
 
-### Навигация / окна
+### Navigation / windows
 
-| Keys          | Действие                |
+| Keys          | Action                  |
 | ------------- | ----------------------- |
-| `<C-h/j/k/l>` | Между окнами            |
-| `<A-arrow>`   | Ресайз окна             |
+| `<C-h/j/k/l>` | Between windows         |
+| `<A-arrow>`   | Resize window           |
 | `\|`          | Vsplit                  |
 | `\`           | Split                   |
 | `s` / `S`     | Leap forward / backward |
 
-### Прочее
+### Misc
 
-| Keys                      | Действие                                                |
-| ------------------------- | ------------------------------------------------------- |
-| `<C-\>`                   | Toggle terminal                                         |
-| `<leader>?`               | Which-key: все доступные клавиши буфера                 |
-| `<C-Space>`               | Начать выделение по синтаксису (treesitter incremental) |
-| `<C-u>/<C-d>/<C-b>/<C-f>` | Плавный скролл                                          |
+| Keys                      | Action                                                |
+| ------------------------- | ----------------------------------------------------- |
+| `<C-\>`                   | Toggle terminal                                       |
+| `<leader>?`               | Which-key: all available buffer keys                  |
+| `<C-Space>`               | Start syntax-aware selection (treesitter incremental) |
+| `<C-u>/<C-d>/<C-b>/<C-f>` | Smooth scroll                                         |
 
 ---
 
-## LSP — что установится автоматически через Mason
+## LSP — what gets installed automatically via Mason
 
-| Сервер                  | Язык                 |
-| ----------------------- | -------------------- |
-| `lua_ls`                | Lua                  |
-| `ts_ls`                 | JS / TS              |
-| `html`                  | HTML                 |
-| `cssls`                 | CSS                  |
-| `tailwindcss`           | Tailwind             |
-| `intelephense`          | PHP                  |
-| `pyright`               | Python               |
-| `emmet_language_server` | Emmet в HTML/JSX/PHP |
+| Server                  | Language              |
+| ----------------------- | --------------------- |
+| `lua_ls`                | Lua                   |
+| `ts_ls`                 | JS / TS               |
+| `html`                  | HTML                  |
+| `cssls`                 | CSS                   |
+| `tailwindcss`           | Tailwind              |
+| `intelephense`          | PHP                   |
+| `pyright`               | Python                |
+| `emmet_language_server` | Emmet in HTML/JSX/PHP |
 
-Форматтеры (тоже через Mason):
+Formatters (also via Mason):
 `stylua`, `prettierd`, `black`, `isort`, `php-cs-fixer`, `eslint_d`.
 
-Автоформат включён при сохранении. Выключить:
+Format on save is enabled. To disable:
 
-- временно в буфере: `:FormatDisable!`
-- глобально: `:FormatDisable`
-- обратно: `:FormatEnable`
+- temporarily in buffer: `:FormatDisable!`
+- globally: `:FormatDisable`
+- back on: `:FormatEnable`
 
 ---
 
 ## nvim orgmode
 
-| Действие      | Keys        |
+| Action        | Keys        |
 | ------------- | ----------- |
 |               |             |
-| Смена статуса | cit         |
-| Дедлайн       | <leader>odd |
+| Change status | cit         |
+| Deadline      | <leader>odd |
 | Schedule      | <leader>ods |
 | Agenda        | <leader>oa  |
 |               |             |
@@ -236,35 +236,35 @@ nvim/
 
 ---
 
-## Что поменялось по сравнению с старым конфигом
+## What changed compared to the old config
 
-1. **nvim-cmp → blink.cmp** — быстрее, встроенные snippets (`vim.snippet`),
+1. **nvim-cmp → blink.cmp** — faster, built-in snippets (`vim.snippet`),
    rust-fuzzy-matcher.
-2. **phpactor → intelephense** — качественный PHP LSP.
-3. Добавлены **pyright**, **tailwindcss**, **emmet**.
-4. **Comment.nvim** на `<leader>-`.
-5. **CodeCompanion** под локальную Ollama (чат, inline, actions как gptel в emacs)
-6. **neoscroll** с таймингами под 240 Hz.
-7. **conform.nvim** для форматирования.
+2. **phpactor → intelephense** — high-quality PHP LSP.
+3. Added **pyright**, **tailwindcss**, **emmet**.
+4. **Comment.nvim** on `<leader>-`.
+5. **CodeCompanion** for local Ollama (chat, inline, actions like gptel in emacs)
+6. **neoscroll** with timings tuned for 240 Hz.
+7. **conform.nvim** for formatting.
 8. **nvim-autopairs**, **which-key**.
-9. `core/configs.lua`: добавлен `undofile`, `signcolumn`, `smartcase`,
-   `vim.diagnostic.config()` с signs через новый API (0.11+).
-10. `core/mappings.lua`: `leader Q` — force quit all, visual J/K — двигать
-    строки, visual `<`/`>` — indent с сохранением выделения.
-11. Везде расставил lazy-загрузку (`event`, `keys`, `cmd`) — старт nvim
-    ускоряется заметно.
-12. Добавил nvim orgmode
+9. `core/configs.lua`: added `undofile`, `signcolumn`, `smartcase`,
+   `vim.diagnostic.config()` with signs via the new API (0.11+).
+10. `core/mappings.lua`: `leader Q` — force quit all, visual J/K — move
+    lines, visual `<`/`>` — indent while keeping the selection.
+11. Lazy loading set up everywhere (`event`, `keys`, `cmd`) — nvim startup
+    is noticeably faster.
+12. Added nvim orgmode.
 
 ---
 
 ## Troubleshooting
 
-- **Treesitter ругается на парсер** → `:TSUpdate`
-- **LSP не запускается** → `:LspInfo`, `:Mason`
-- **CodeCompanion не отвечает** → `systemctl --user status ollama`,
-  `curl http://127.0.0.1:11434/api/tags` (должен вернуть список моделей).
-- **Blink.cmp: нет автокомплита** → `:checkhealth blink`;
-  если ругается на rust-бинарь — `version = "1.*"` в
-  `plugins/blink-cmp.lua` должен его подтянуть из релиза.
-- **Иконки как `??`** → поставь nerd-font и выбери его в терминале.
-- **Форматирование не срабатывает** → `:ConformInfo`
+- **Treesitter complains about a parser** → `:TSUpdate`
+- **LSP won't start** → `:LspInfo`, `:Mason`
+- **CodeCompanion doesn't respond** → `systemctl --user status ollama`,
+  `curl http://127.0.0.1:11434/api/tags` (should return a list of models).
+- **Blink.cmp: no autocomplete** → `:checkhealth blink`;
+  if it complains about the rust binary — `version = "1.*"` in
+  `plugins/blink-cmp.lua` should pull it from the release.
+- **Icons show as `??`** → install a nerd-font and select it in your terminal.
+-
