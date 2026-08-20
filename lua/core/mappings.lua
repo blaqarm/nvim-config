@@ -1,6 +1,4 @@
--- ============================================================================
 --  KEYMAPS (глобальные; плагин-специфичные живут в их файлах)
--- ============================================================================
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -86,3 +84,30 @@ vim.keymap.set("n", "gcA", function()
 	vim.api.nvim_win_set_cursor(0, { vim.fn.line("."), #vim.api.nvim_get_current_line() })
 	vim.cmd("startinsert!")
 end, { desc = "Comment at end of line" })
+
+-- Быстрое переключение markdown-чекбокса: - [ ] <-> - [x]
+local function toggle_checkbox()
+	local line = vim.api.nvim_get_current_line()
+
+	-- Если строка содержит чекбокс
+	if line:match("^%s*[-*+] %[[ xX]%]") then
+		local new_line
+		if line:match("%[[xX]%]") then
+			new_line = line:gsub("%[[xX]%]", "[ ]", 1) -- снять галочку
+		else
+			new_line = line:gsub("%[ %]", "[x]", 1) -- поставить галочку
+		end
+		vim.api.nvim_set_current_line(new_line)
+	else
+		-- Если чекбокса нет — добавить его в начало списка
+		local new_line = line:gsub("^(%s*[-*+] )", "%1[ ] ", 1)
+		if new_line == line then
+			-- Если это просто текст без маркера списка — сделать пунктом
+			new_line = "- [ ] " .. line
+		end
+		vim.api.nvim_set_current_line(new_line)
+	end
+end
+
+vim.keymap.set("n", "<leader>cit", toggle_checkbox, { desc = "Toggle checkbox" })
+vim.keymap.set("v", "<leader>cit", toggle_checkbox, { desc = "Toggle checkbox" })
